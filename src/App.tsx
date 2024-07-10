@@ -1,28 +1,33 @@
-import { useSession } from "@clerk/clerk-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login from "./pages/Login";
+
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
+import { useAppSelector } from "./hooks/useRedux";
+import { Dashboard, Login, Register, Verify } from "./pages";
 
 const App = () => {
-  const { isSignedIn,isLoaded } = useSession();
+  const { token } = useAppSelector((state) => state.user);
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: isSignedIn ? <Dashboard /> : <Home />,
+      element: token ? <Dashboard /> : <Home />,
     },
     {
       path: "workspace/",
-      // loader: isLoaded,
-      element: isSignedIn && isLoaded ? <Dashboard /> : <Login />,
-      children: [
-
-      ]
+      element: token ? <Dashboard /> : <Login />,
+      children: [],
     },
     {
-      path: "/sign-in/*",
+      path: "/login/*",
       element: <Login />,
+    },
+    {
+      path: "/register/*",
+      element: <Register />,
+    },
+    {
+      path: "/verify/*",
+      element: <Verify />,
     },
   ]);
 

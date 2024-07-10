@@ -13,12 +13,12 @@ const Home = () => {
           </div>
         </div>
         <div className="flex justify-end items-center">
-          <Link to="/sign-in">
+          <Link to="/login">
             <Button className="mr-2" variant="ghost">
               Login
             </Button>
           </Link>
-          <Link to="/sign-in">
+          <Link to="/register">
             <Button>Get Stack for free</Button>
           </Link>
         </div>
@@ -43,7 +43,7 @@ const Home = () => {
           unique—accomplish it all with Stack.
         </div>
         <div className="flex justify-center mt-4">
-          <Link to="/sign-in">
+          <Link to="/register">
             <Button size="lg">Get Stack for free</Button>
           </Link>
         </div>
