@@ -8,6 +8,7 @@ import { Activity, CreditCard, Layout, Settings } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
 
 interface SideNaveItemProps {
   id: string;
@@ -49,6 +50,8 @@ const SideNavItem = ({
   setActiveButton,
   name,
 }: SideNaveItemProps) => {
+  const { pathname } = useLocation();
+
   const [expanded, seExpanded] = useLocalStorage<Record<string, any>>(
     storageKey,
     {}
@@ -71,6 +74,7 @@ const SideNavItem = ({
     }));
   };
 
+  console.log(pathname, activeButton);
 
   return (
     <Accordion type="multiple" defaultValue={accordionValue} className="w-full">
@@ -93,32 +97,34 @@ const SideNavItem = ({
           </div>
         </AccordionTrigger>
         <AccordionContent>
-          {routes.map(({ icon: Icon, name, path }) => (
-            <Button
-              key={name}
-              variant="ghost"
-              // onClick={() => handleRoute(workspaceId, path)}
-              className={cn(
-                "w-full justify-start text-indigo-700 space-x-2 items-center"
-                // isExpanded && path === `${pathname}` && "bg-indigo-100/50"
-              )}
-            >
-              <Icon
+          {routes.map(({ icon: Icon, name, path }) => {
+            return (
+              <Link
+                to={`${id}${path}`}
+                key={name}
+                onClick={() => setActiveButton(`/workspace/${id}${path}`)}
                 className={cn(
-                  "text-neutral-500 h-5 w-5"
-                  // isExpanded && path === `${pathname}` && "text-indigo-700"
-                )}
-              />
-              <div
-                className={cn(
-                  "text-neutral-800 text-sm font-normal"
-                  // isExpanded && path === `${pathname}` && "text-indigo-700"
+                  "w-full justify-start text-indigo-700 space-x-2 flex px-4 py-3 hover:bg-indigo-100 rounded-lg items-center",
+                  activeButton === `/workspace/${id}${path}` && "bg-indigo-100"
                 )}
               >
-                {name}
-              </div>
-            </Button>
-          ))}
+                <Icon
+                  className={cn(
+                    "text-neutral-500 h-5 w-5"
+                    // isExpanded && path === `${pathname}` && "text-indigo-700"
+                  )}
+                />
+                <div
+                  className={cn(
+                    "text-neutral-800 text-sm font-normal"
+                    // isExpanded && path === `${pathname}` && "text-indigo-700"
+                  )}
+                >
+                  {name}
+                </div>
+              </Link>
+            );
+          })}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

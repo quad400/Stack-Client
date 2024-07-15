@@ -1,20 +1,32 @@
 import { Link } from "react-router-dom";
 import MobileToggle from "./MobileToggle";
 import { Button } from "./ui/button";
-import { CircleHelp, Plus, Search } from "lucide-react";
+import { CircleHelp, LogOut, Plus, Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { Form, FormControl, FormItem } from "./ui/form";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/lib/schema/search";
 import { ElementRef, useEffect, useRef } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import ActionTooltip from "@/components/ActionTooltop";
-// import UserAvatar from "./UserAvatar";
+import { Logo } from "@/constants/Images";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { ShowModal } from "@/features/workspaceSlice";
+import UserAvatar from "./UserAvatar";
+import { Separator } from "@radix-ui/react-separator";
 
 const MainNav = () => {
   const searchInputRef = useRef<ElementRef<"input">>(null);
 
+  const dispatch = useAppDispatch();
+
+  const { user } = useAppSelector((state) => state.user);
   const form = useForm({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
@@ -36,6 +48,10 @@ const MainNav = () => {
     };
   }, []);
 
+  const handleShowModal = () => {
+    dispatch(ShowModal(true, "createWorkspace"));
+  };
+
   return (
     <nav className="flex justify-between items-center px-3 md:px-6 py-1.5 border-b">
       <div className="flex justify-start items-center">
@@ -44,13 +60,14 @@ const MainNav = () => {
           to="/"
           className="text-lg text-neutral-700 hidden justify-start items-center md:flex tracking-tighter md:text-2xl font-semibold ml-1"
         >
-          <img src={"./logo.png"} alt="Logo" height={30} width={30} />
+          <img src={Logo} alt="Logo" height={30} width={30} />
           Stack
         </Link>
-        <Button className="ml-2 hidden md:block">
+        <Button className="ml-2 hidden md:block" onClick={handleShowModal}>
           <div className="font-medium text-white text-sm">Create</div>
         </Button>
         <Button
+          onClick={handleShowModal}
           size="icon"
           className="ml-2 flex justify-center items-center md:hidden"
         >
@@ -98,10 +115,39 @@ const MainNav = () => {
         </ActionTooltip>
 
         <ActionTooltip content="Account" align="end">
-          <button className="rounded-full h-7 w-7 bg-indigo-900 hover:ring-1 hover:ring-offset-2 hover:ring-neutral-200">
-              {/* <UserAvatar /> */
-              <p className="text-base text-neutral-50 font-semibold">A</p>}
-            </button>
+          <Popover>
+            <PopoverTrigger>
+              <button className="hover:ring hover:ring-neutral-200 rounded-full">
+                <UserAvatar user={user} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="mt-3 space-y-2 mr-2 w-[270px] px-0">
+              <div className="flex justify-start space-x-2 px-2 items-center">
+                <UserAvatar user={user} />
+                <div className="flex flex-col justify-start items-start">
+                  <div className="text-neutral-800 font-medium text-sm">
+                    {user?.fullName}
+                  </div>
+                  <div className="text-neutral-700 font-normal text-xs">
+                    {user?.email}
+                  </div>
+                </div>
+              </div>
+              <Separator className="h-px bg-neutral-200 w-full" />
+              <div className="px-2">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="flex w-full space-x-3 mb-2 justify-start items-center"
+                >
+                  <LogOut className="text-neutral-700 h-5 w-5" />
+                  <div className="text-neutral-700 font-normal text-sm">
+                    Log out
+                  </div>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </ActionTooltip>
       </div>
     </nav>

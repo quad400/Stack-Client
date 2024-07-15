@@ -7,3 +7,4 @@ export {default as Verify} from "@/pages/auth/Verify"
 
 // dashboard
 export {default as Dashboard} from "@/pages/dashboard/Dashboard"
+export {default as Boards} from "@/pages/dashboard/Boards"

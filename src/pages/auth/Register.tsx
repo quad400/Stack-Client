@@ -13,18 +13,29 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate, } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import BASE_URL from "@/constants/Endpoint";
+import { toast } from "sonner";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
+  const { token } = useAppSelector((state) => state.user);
+
+  useLayoutEffect(() => {
+    if (token) {
+      navigate(`/workspace`);
+    }
+  }, [token]);
 
   const form = useForm({
     resolver: zodResolver(registerFormSchema),
@@ -38,7 +49,14 @@ const Register = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof registerFormSchema>) => {
-    navigate("/verify")
+    try {
+      await axios.post(`${BASE_URL}/users/register`, values);
+      toast.success("User successfully created");
+
+      form.reset();
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -199,7 +217,12 @@ const Register = () => {
           <div className="m-1">
             <div className="text-sm text-neutral-800 py-4 font-medium rounded-md text-center bg-neutral-200 ">
               Already have an account?{" "}
-              <Link to="/login" className="text-indigo-600 cursor-pointer text-sm">Sign In</Link>
+              <Link
+                to="/login"
+                className="text-indigo-600 cursor-pointer text-sm"
+              >
+                Sign In
+              </Link>
             </div>
           </div>
         </div>

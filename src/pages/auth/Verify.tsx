@@ -1,6 +1,27 @@
+import BASE_URL from "@/constants/Endpoint";
+import axios from "axios";
 import { Loader } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const Verify = () => {
+  const { verifyId } = useParams();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await axios.post(`${BASE_URL}/users/activate/${verifyId}`);
+        toast.success("User sucessfully verified");
+        navigate("/login", {replace: true});
+      } catch (error: any) {
+        toast.success(error.response.data.message);
+      }
+    })();
+  }, []);
+
   return (
     <div className="flex justify-center items-center bg-neutral-100 h-screen w-full">
       <div className="shadow-lg p-6 flex rounded-lg flex-col justify-center bg-white items-center">

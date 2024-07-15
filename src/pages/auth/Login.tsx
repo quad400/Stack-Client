@@ -13,13 +13,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import axios from "axios";
+import BASE_URL from "@/constants/Endpoint";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+
+  const {token} = useAppSelector(state=> state.user)
+
+
+  const navigate = useNavigate();
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -34,12 +43,29 @@ const Login = () => {
 
   const isLoading = form.formState.isSubmitting;
 
-  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {};
+  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
+    try {
+      const { data } = await axios.post(`${BASE_URL}/users/login`, values);
+
+      toast.success("Login Successful");
+
+      localStorage.setItem("token", data?.data.tokens.access);
+      navigate(`/workspace`, { replace: true });
+      form.reset();
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  if(token){
+    navigate(`/workspace`)
+  }
 
   return (
     <div className="flex justify-center items-center w-full h-screen flex-col px-6 md:px-10 bg-neutral-100">
-        
-      <div className="text-neutral-900 font-bold text-3xl text-left mb-4">Stack</div>
+      <div className="text-neutral-900 font-bold text-3xl text-left mb-4">
+        Stack
+      </div>
       <div className="bg-white w-full shadow-lg rounded-lg pt-6  justify-center items-start flex-col flex md:w-1/2 lg:w-1/3">
         <div className="w-full justify-center items-center mb-4">
           <div className="text-xl text-center text-neutral-900 font-bold">
@@ -115,7 +141,7 @@ const Login = () => {
               <div className="flex gap-4 justify-start items-start cursor-pointer mt-4">
                 <Input type="checkbox" className="h-5 w-5 rounded-sm" />
                 <div className="text-neutral-800 text-sm">
-                 Stay signed in for a week
+                  Stay signed in for a week
                 </div>
               </div>
             </div>
