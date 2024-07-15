@@ -7,6 +7,7 @@ import { IList } from "@/lib/interfaces";
 import { useState } from "react";
 // import useLists from "@/hooks/use-list";
 import { useParams } from "react-router-dom";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const BoardContent = () => {
   const data = [
@@ -59,6 +60,8 @@ const BoardContent = () => {
   ];
 
   const { boardId } = useParams();
+
+  const { board } = useAppSelector((state) => state.workspace);
   //   const lists = useLists({ boardId });
 
   // console.log("lists", lists);
@@ -155,13 +158,13 @@ const BoardContent = () => {
             ref={provided.innerRef}
             className="mt-6 mx-8 flex flex-row justify-start items-start gap-4 flex-wrap"
           >
-            {data.map((item, index) => (
+            {board?.lists.map((item, index) => (
               <ListCard
                 key={item._id}
                 index={index}
                 name={item.name}
                 cards={item.cards}
-                id={JSON.parse(JSON.stringify(item._id))}
+                _id={item._id}
               />
             ))}
             {provided.placeholder}

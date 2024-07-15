@@ -14,10 +14,8 @@ const App = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    console.log(token);
     if (token) {
-      dispatch(UserDetails());
+      dispatch(UserDetails(token));
     }
   }, []);
 

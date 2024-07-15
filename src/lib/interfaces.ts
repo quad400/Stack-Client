@@ -9,42 +9,41 @@ export interface IMember {
   user: IUser;
   role: string;
 }
-
 export interface IWorkspace {
-  _id?: string;
-  name: string;
-  imageUri: string;
-  boards: IBoard[];
-  members: IMember[];
+  _id: string;
   createdBy: IUser;
+  name: string;
+  image: string;
+  description: string;
+  boards: IBoard[];
+  inviteCode: string;
+  members: IMember[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IBoard {
   _id: string;
   name: string;
-  imageUri: string;
-  workspace: IWorkspace;
+  image: string;
+  workspaceId: IWorkspace;
   lists: IList[];
-}
-
-export interface IBoard {
-  _id: string;
-  name: string;
-  imageUri: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IList {
   _id: string;
   name: string;
-  board: IBoard;
-  //   order: number;
+  boardId: IBoard;
+  order: number;
   cards: ICard[];
 }
 
 export interface ICard {
   _id: string;
   name: string;
-  //   order: number;
-  list: IList;
-  description: string;
+  order: number;
+  listId: IList;
+  description?: string;
 }

@@ -1,10 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/constants/Images";
+import { useAppSelector } from "@/hooks/useRedux";
 import { Boxes } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const { token } = useAppSelector((state) => state.user);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigate(`/workspace`);
+    }
+  }, [token]);
 
   return (
     <main className="flex flex-col h-screen w-full bg-neutral-200/50">

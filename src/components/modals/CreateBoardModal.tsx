@@ -1,3 +1,4 @@
+import qs from "query-string";
 import {
   Dialog,
   DialogContent,
@@ -5,7 +6,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CloseModal } from "@/features/workspaceSlice";
+import { CloseModal, GetWorkspaceDispatch } from "@/features/workspaceSlice";
 
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { boardFormSchema } from "@/lib/schema/workspace";
@@ -23,6 +24,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import ImageSelector from "../ImageSelector";
+import BASE_URL from "@/constants/Endpoint";
+import axios from "axios";
+import { toast } from "sonner";
+import { useParams } from "react-router-dom";
 
 const CreateBoardModal = () => {
   const { modalType, showModal } = useAppSelector((state) => state.workspace);
@@ -31,26 +36,42 @@ const CreateBoardModal = () => {
 
   const dispatch = useAppDispatch();
 
+  const { token } = useAppSelector((state) => state.user);
+  const { workspace } = useAppSelector((state) => state.workspace);
+
   const form = useForm({
     resolver: zodResolver(boardFormSchema),
     defaultValues: {
       name: "",
-      imageUrl: "",
+      image: "",
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof boardFormSchema>) => {
-    //       try{
-    //         const {data} = await axios.post("/api/workspaces", values)
-    //         onClose()
-    //         form.reset()
-    //         toast.success("Workspace created successfully")
-    //         router.push(`/dashboard/${data?._id}`)
-    //       }catch(error){
-    //         toast.error("Error creating workspace")
-    //       }
+    if (!worksapce) return;
+
+    try {
+      const url = qs.stringifyUrl({
+        url: `${BASE_URL}/boards`,
+        query: {
+          workspaceId: workspace._id,
+        },
+      });
+
+      await axios.post(url, values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      onClose();
+      dispatch(GetWorkspaceDispatch(workspace._id));
+      form.reset();
+      toast.success("Board created successfully");
+    } catch (error) {
+      toast.error("Error creating board");
+    }
   };
 
   const onClose = () => {
@@ -72,12 +93,12 @@ const CreateBoardModal = () => {
             <div className="mx-6 flex flex-col space-y-3">
               <FormField
                 control={form.control}
-                name="imageUrl"
+                name="image"
                 render={() => (
                   <FormItem>
                     <ImageSelector
-                      onSelect={form.setValue.bind(null, "imageUrl")}
-                      selected={form.getValues("imageUrl")}
+                      onSelect={form.setValue.bind(null, "image")}
+                      selected={form.getValues("image")}
                     />
                     <FormMessage />
                   </FormItem>

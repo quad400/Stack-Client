@@ -1,9 +1,12 @@
 import { IBoard } from "@/lib/interfaces";
 import { useNavigate } from "react-router-dom";
 
-const BoardCard = ({ _id, imageUri, name }: IBoard) => {
-  const navigate = useNavigate();
 
+type IBoardCardProps = Pick<IBoard, "image" | "_id" | "name">
+
+const BoardCard = ({ _id, image, name }: IBoardCardProps) => {
+  const navigate = useNavigate();
+  
   const handleClick = () => {
     navigate(`/boards/${_id}`);
   };
@@ -11,7 +14,7 @@ const BoardCard = ({ _id, imageUri, name }: IBoard) => {
   return (
     <button onClick={handleClick} className="relative group rounded-md h-32">
       <img
-        src={imageUri}
+        src={image}
         alt={name}
         className="h-full w-full rounded-md object-cover"
       />

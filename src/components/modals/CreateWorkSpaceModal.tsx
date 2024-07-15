@@ -3,11 +3,9 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CloseModal } from "@/features/workspaceSlice";
-
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { workspaceFormSchema } from "@/lib/schema/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,40 +22,82 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { z } from "zod";
-import { getImageData } from "@/lib/utils";
-import { Textarea } from "../ui/textarea";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
 import { toast } from "sonner";
+import { getImageData } from "@/lib/utils";
+import { Textarea } from "../ui/textarea";
+import { Loader2 } from "lucide-react";
 
 const CreateWorkSpaceModal = () => {
   const [preview, setPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
+  const { token } = useAppSelector((state) => state.user);
   const { modalType, showModal } = useAppSelector((state) => state.workspace);
-
   const isOpen = modalType === "createWorkspace" && showModal;
-
   const dispatch = useAppDispatch();
 
   const form = useForm({
     resolver: zodResolver(workspaceFormSchema),
     defaultValues: {
       name: "",
-      imageUrl: "",
+      image: "",
       description: "",
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
-  const onSubmit = async (values: z.infer<typeof workspaceFormSchema>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { files, displayUrl } = getImageData(event);
+    setPreview(displayUrl);
     try {
-      const { data } = await axios.post(`${BASE_URL}/workspaces`, values);
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("image", files[0]);
+
+      const response = await axios.post(`${BASE_URL}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setUploadedImageUrl(response.data.data); // Adjust this based on your API response
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error uploading image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof workspaceFormSchema>) => {
+    if (!uploadedImageUrl) {
+      toast.error("Please upload an image first");
+      return;
+    }
+
+    try {
+      const workspaceData = {
+        ...values,
+        image: uploadedImageUrl,
+      };
+
+      await axios.post(`${BASE_URL}/workspaces`, workspaceData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       onClose();
       form.reset();
       toast.success("Workspace created successfully");
       // router.push(`/dashboard/${data?._id}`)
     } catch (error) {
+      console.error("Error creating workspace:", error);
       toast.error("Error creating workspace");
     }
   };
@@ -77,7 +117,7 @@ const CreateWorkSpaceModal = () => {
         </DialogDescription>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className=" mt-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
             <div className="mx-6 flex flex-col space-y-3">
               <FormField
                 control={form.control}
@@ -102,8 +142,8 @@ const CreateWorkSpaceModal = () => {
               />
               <FormField
                 control={form.control}
-                name="imageUrl"
-                render={({ field: { onChange, value, ...rest } }) => (
+                name="image"
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm text-neutral-800 font-medium">
                       Image
@@ -115,15 +155,17 @@ const CreateWorkSpaceModal = () => {
                       )}
                       <Input
                         type="file"
-                        {...rest}
+                        {...field}
+                        disabled={isLoading}
                         onChange={(event) => {
-                          const { files, displayUrl } = getImageData(event);
-                          setPreview(displayUrl);
-                          onChange(files);
+                          field.onChange(event); // Update form value
+                          handleFileChange(event); // Upload file
                         }}
                       />
+                      {uploading && (
+                        <Loader2 className="text-neutral-600 h-4 w-4 animate-spin" />
+                      )}
                     </div>
-
                     <FormMessage />
                   </FormItem>
                 )}

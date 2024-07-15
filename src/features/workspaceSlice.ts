@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppDispatch } from "./store";
-import { ICard } from "@/lib/interfaces";
+import { AppDispatch, RootState } from "./store";
+import { IBoard, ICard, IWorkspace } from "@/lib/interfaces";
+import axios from "axios";
+import BASE_URL from "@/constants/Endpoint";
+import { toast } from "sonner";
 
 type ModalType = "createWorkspace" | "createBoard" | "cardModal" | null;
 
@@ -10,12 +13,18 @@ interface WorkspaceState {
   showModal: boolean;
   modalType: ModalType;
   data: ModalData;
+  workspace: IWorkspace | null;
+  board: IBoard | null;
+  workspaces: IWorkspace[] | [];
 }
 
 const initialState: WorkspaceState = {
   showModal: false,
   modalType: null,
   data: undefined,
+  workspace: null,
+  board: null,
+  workspaces: [],
 };
 
 const slice = createSlice({
@@ -30,6 +39,15 @@ const slice = createSlice({
     },
     data: (state, action: PayloadAction<ModalData>) => {
       state.data = action.payload;
+    },
+    workspace: (state, action: PayloadAction<IWorkspace | null>) => {
+      state.workspace = action.payload;
+    },
+    board: (state, action: PayloadAction<IBoard | null>) => {
+      state.board = action.payload;
+    },
+    workspaces: (state, action: PayloadAction<IWorkspace[] | []>) => {
+      state.workspaces = action.payload;
     },
   },
 });
@@ -53,5 +71,65 @@ export const CloseModal = () => {
     dispatch(slice.actions.showModal(false));
     dispatch(slice.actions.modalType(null));
     dispatch(slice.actions.data(undefined));
+  };
+};
+
+export const WorkspaceDispatch = (data: IWorkspace) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(slice.actions.workspace(data));
+  };
+};
+
+export const GetWorkspacesDispatch = () => {
+  return async (dispatch: AppDispatch) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const { data } = await axios.get(`${BASE_URL}/workspaces`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(slice.actions.workspaces(data.data));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    }
+  };
+};
+
+export const GetWorkspaceDispatch = (workspaceId: string) => {
+  return async (dispatch: AppDispatch) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const { data } = await axios.get(`${BASE_URL}/workspaces/${workspaceId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(slice.actions.workspace(data.data));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    }
+  };
+};
+
+export const GetBoardDispatch = (boardId: string) => {
+  return async (dispatch: AppDispatch) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const { data } = await axios.get(`${BASE_URL}/boards/${boardId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(slice.actions.board(data.data));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    }
   };
 };

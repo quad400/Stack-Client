@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField } from "../ui/form";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
-import { ElementRef, useRef } from "react";
+import { ElementRef, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -13,7 +13,7 @@ const formSchema = z.object({
   name: z.string(),
 });
 
-const BoardHeader = ({ name }: { name: string }) => {
+const BoardHeader = ({ name }: { name: string | undefined}) => {
   const inputRef = useRef<ElementRef<"input">>(null);
 
   const { boardId } = useParams();
@@ -21,11 +21,15 @@ const BoardHeader = ({ name }: { name: string }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: name,
+      name: "",
     },
   });
 
-  
+  useEffect(() => {
+    if (!name) return;
+    form.setValue("name", name);
+  }, [form, name]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // const url = qs.stringifyUrl({
     //   url: "/api/workspaces/board",
@@ -35,7 +39,6 @@ const BoardHeader = ({ name }: { name: string }) => {
     // });
     // try {
     //   await axios.patch(url, values);
-
     //   router.refresh()
     //   inputRef.current?.blur();
     //   toast.success("Board name updated");
@@ -81,7 +84,7 @@ const BoardHeader = ({ name }: { name: string }) => {
                     id="name"
                     autoComplete="off"
                     defaultValue={name}
-                    className="text-neutral-800 focus-visible:ring-offset-1 h-8 focus-visible:ring-indigo-400 py-0 border-0"
+                    className="text-neutral-800 text-lg cursor-pointer hover:bg-white/50 focus-visible:ring-offset-1 bg-transparent focus:bg-white h-8 focus-visible:ring-indigo-400 py-0 border-0"
                   />
                 </FormControl>
               )}

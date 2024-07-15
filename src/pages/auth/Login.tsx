@@ -1,4 +1,4 @@
-import { CircleCheck, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,8 +25,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const {token} = useAppSelector(state=> state.user)
-
+  const { token } = useAppSelector((state) => state.user);
 
   const navigate = useNavigate();
   const toggleShowPassword = () => {
@@ -57,9 +56,11 @@ const Login = () => {
     }
   };
 
-  if(token){
-    navigate(`/workspace`)
-  }
+  useEffect(() => {
+    if (token) {
+      navigate(`/workspace`);
+    }
+  }, [token]);
 
   return (
     <div className="flex justify-center items-center w-full h-screen flex-col px-6 md:px-10 bg-neutral-100">

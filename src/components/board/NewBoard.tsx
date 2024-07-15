@@ -12,7 +12,7 @@ const NewBoard = () => {
   }
 
   return (
-    <button onClick={handleOpenModal} className="rounded-md h-32 bg-neutral-100 hover:bg-neutral-200/80 transition relative space-y-2">
+    <button onClick={handleOpenModal} className="rounded-md h-32 bg-neutral-100 hover:bg-neutral-200/80 px-3 transition relative space-y-2">
       <div className="text-neutral-700 text-sm font-medium">
         Create new board
       </div>

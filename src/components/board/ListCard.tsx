@@ -11,29 +11,29 @@ import Card from "./Card";
 
 interface ListCardProps {
   name: string;
-  id: string;
+  _id: string;
   cards: ICard[];
   index: number;
 }
 
-const ListCard = ({ name, id, index, cards }: ListCardProps) => {
+const ListCard = ({ name, _id, index, cards }: ListCardProps) => {
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={_id} index={index}>
       {(provided) => (
         <li
           {...provided.draggableProps}
           ref={provided.innerRef}
-          className="bg-neutral-100/70 w-[250px] backdrop-blur-lg rounded-lg shadow-sm py-2 px-2.5 transition-all flex flex-col"
+          className="bg-white/90 w-[250px] backdrop-blur-sm rounded-lg shadow-sm py-2 px-2.5 transition-all flex flex-col"
         >
           <div
             {...provided.dragHandleProps}
-            className="flex-row justify-between flex items-center"
+            className="flex-row justify-between flex space-x-1 items-center"
           >
-            <ListHeader name={name} id={id} />
+            <ListHeader name={name} _id={_id} />
 
-            <ListAction listId={id} name={name} />
+            <ListAction listId={_id} name={name} />
           </div>
-          <Droppable  droppableId={id} type="card">
+          <Droppable  droppableId={_id} type="card">
             {(provided) => (
               <ol
                 ref={provided.innerRef}
@@ -47,7 +47,7 @@ const ListCard = ({ name, id, index, cards }: ListCardProps) => {
               </ol>
             )}
           </Droppable>
-          <NewCard listId={id}>
+          <NewCard listId={_id}>
             <Button
               variant="ghost"
               className="flex justify-start space-x-3 w-full items-center"

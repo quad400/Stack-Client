@@ -6,14 +6,14 @@ import {
 } from "@/components/ui/accordion";
 import { Activity, CreditCard, Layout, Settings } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
+import { IWorkspace } from "@/lib/interfaces";
+import { WorkspaceDispatch } from "@/features/workspaceSlice";
+import { useAppDispatch } from "@/hooks/useRedux";
 
 interface SideNaveItemProps {
-  id: string;
-  name: string;
-  avatar: string;
+  workspace: IWorkspace;
   activeButton: any;
   setActiveButton: any;
   storageKey: string;
@@ -44,11 +44,9 @@ const routes = [
 
 const SideNavItem = ({
   storageKey,
-  id,
-  avatar,
   activeButton,
   setActiveButton,
-  name,
+  workspace,
 }: SideNaveItemProps) => {
   const { pathname } = useLocation();
 
@@ -56,6 +54,8 @@ const SideNavItem = ({
     storageKey,
     {}
   );
+
+  const dispatch = useAppDispatch();
 
   const accordionValue: string[] = Object.keys(expanded).reduce(
     (acc: string[], key: string) => {
@@ -74,25 +74,26 @@ const SideNavItem = ({
     }));
   };
 
-  console.log(pathname, activeButton);
+  const handleClick = (path: any) => {
+    setActiveButton(`/workspace/${workspace._id}${path}`);
+    dispatch(WorkspaceDispatch(workspace));
+  };
 
   return (
     <Accordion type="multiple" defaultValue={accordionValue} className="w-full">
-      <AccordionItem value={id}>
+      <AccordionItem value={workspace._id}>
         <AccordionTrigger
           className="w-full hover:no-underline "
-          onClick={() => handleExpand(id)}
+          onClick={() => handleExpand(workspace._id)}
         >
           <div className="flex no-underline space-x-2 justify-start items-center w-full">
             <img
-              src={avatar}
-              alt={name}
-              width={30}
-              height={30}
-              className="rounded-lg"
+              src={workspace.image}
+              alt={workspace.name}
+              className="rounded-xl h-10 w-10 object-fill"
             />
             <div className="text-sm truncat text-neutral-800 font-medium">
-              {name}
+              {workspace.name}
             </div>
           </div>
         </AccordionTrigger>
@@ -100,12 +101,13 @@ const SideNavItem = ({
           {routes.map(({ icon: Icon, name, path }) => {
             return (
               <Link
-                to={`${id}${path}`}
+                to={`${workspace._id}${path}`}
                 key={name}
-                onClick={() => setActiveButton(`/workspace/${id}${path}`)}
+                onClick={() => handleClick(path)}
                 className={cn(
                   "w-full justify-start text-indigo-700 space-x-2 flex px-4 py-3 hover:bg-indigo-100 rounded-lg items-center",
-                  activeButton === `/workspace/${id}${path}` && "bg-indigo-100"
+                  activeButton === `/workspace/${workspace._id}${path}` &&
+                    "bg-indigo-100"
                 )}
               >
                 <Icon

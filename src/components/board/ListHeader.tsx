@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import z from "zod";
 import axios from "axios";
@@ -10,16 +10,21 @@ import { Form, FormControl, FormField } from "../ui/form";
 import { Input } from "../ui/input";
 import { useParams, useNavigation } from "react-router-dom";
 import { toast } from "sonner";
+import BASE_URL from "@/constants/Endpoint";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { GetBoardDispatch } from "@/features/workspaceSlice";
 
 const formSchema = z.object({
   name: z.string(),
 });
 
-const ListHeader = ({ name, id }: { name: string; id: string }) => {
+const ListHeader = ({ name, _id }: { name: string; _id: string }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const navigation = useNavigation();
-  
+  const { token } = useAppSelector((state) => state.user);
+  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const dispatch = useAppDispatch();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -27,25 +32,33 @@ const ListHeader = ({ name, id }: { name: string; id: string }) => {
     },
   });
 
+  console.log(name)
+
   const loading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!workspace || !board) return;
 
-    console.log(values)
     const url = qs.stringifyUrl({
-      url: "/api/workspaces/board/list",
+      url: `${BASE_URL}/lists`,
       query: {
-        listId: id,
+        workspaceId: workspace?._id,
+        listId: _id,
       },
     });
     try {
-      await axios.patch(url, values);
+      await axios.patch(url, values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    //   router.refresh();
+      //   router.refresh();
       inputRef.current?.blur();
+      dispatch(GetBoardDispatch(board._id));
       toast.success("List name updated");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response.data.message);
       toast.error("Error updating list name");
     }
   };
@@ -67,7 +80,7 @@ const ListHeader = ({ name, id }: { name: string; id: string }) => {
                 ref={inputRef}
                 id="name"
                 defaultValue={name}
-                className="text-neutral-800 focus-visible:ring-offset-1 h-8 focus-visible:ring-indigo-400 py-0 border-0"
+                className="text-neutral-800 bg-transparent focus:bg-white focus-visible:ring-offset-1 h-8 focus-visible:ring-indigo-400 py-0 border-0"
               />
             </FormControl>
           )}

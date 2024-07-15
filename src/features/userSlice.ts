@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppDispatch } from "./store";
+import { AppDispatch, RootState } from "./store";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
 import { toast } from "sonner";
@@ -45,10 +45,10 @@ export const Token = () => {
   };
 };
 
-export const UserDetails = () => {
+export const UserDetails = (token: string) => {
   return async (dispatch: AppDispatch) => {
-    try {
-      const token = localStorage.getItem("token");
+    try { 
+
       const { data } = await axios.get(`${BASE_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });

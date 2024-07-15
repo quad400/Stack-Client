@@ -16,6 +16,9 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useParams, useNavigation } from "react-router-dom";
+import BASE_URL from "@/constants/Endpoint";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { GetBoardDispatch } from "@/features/workspaceSlice";
 // import useLists from "@/hooks/use-list";
 // import { useModal } from "@/hooks/use-modal-store";
 
@@ -28,8 +31,10 @@ const formSchema = z.object({
 const NewList = () => {
   const inputRef = useRef<ElementRef<"input">>(null);
   const navigation = useNavigation();
-  const { boardId } = useParams();
+  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { token } = useAppSelector((state) => state.user);
 
+  const dispatch = useAppDispatch();
   // const lists = useLists({ boardId });
 
   // const { setData } = useModal();
@@ -56,14 +61,23 @@ const NewList = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      if (!workspace || !board) return;
+
       const url = qs.stringifyUrl({
-        url: "/api/workspaces/board/list",
+        url: `${BASE_URL}/lists`,
         query: {
-          boardId: boardId,
+          workspaceId: workspace?._id,
+          boardId: board?._id,
         },
       });
+      
 
-      await axios.post(url, values);
+      await axios.post(url, values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(GetBoardDispatch(board?._id));
       toast.success("List created successfully");
       //   navigation.refresh();
 
@@ -71,7 +85,7 @@ const NewList = () => {
 
       form.reset();
     } catch (error: any) {
-      console.log(error);
+      console.log(error.response.data.message);
       toast.error("Failed to create list");
     }
 

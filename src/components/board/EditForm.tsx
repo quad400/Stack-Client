@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -14,28 +14,103 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { getImageData } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { IWorkspace } from "@/lib/interfaces";
+import axios from "axios";
+import BASE_URL from "@/constants/Endpoint";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { z } from "zod";
+import { GetWorkspacesDispatch, WorkspaceDispatch } from "@/features/workspaceSlice";
 
+const EditForm = ({
+  setIsEdit,
+  workspace,
+}: {
+  setIsEdit: any;
+  workspace: IWorkspace;
+}) => {
+  const [preview, setPreview] = useState(workspace.image);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(workspace.image);
 
-
-const EditForm = ({ setIsEdit }: { setIsEdit: any }) => {
-  const [preview, setPreview] = useState("");
+  const { token } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch()
 
   const form = useForm({
     resolver: zodResolver(workspaceFormSchema),
     defaultValues: {
       name: "",
       description: "",
-      imageurl: "",
+      image: "",
     },
   });
 
+  const isLoading = form.formState.isSubmitting || uploading;
+
+  useEffect(() => {
+    if (workspace) {
+      form.setValue("name", workspace.name);
+      form.setValue("description", workspace.description);
+    }
+  }, [form, workspace]);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { files, displayUrl } = getImageData(event);
+    setPreview(displayUrl);
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("image", files[0]);
+
+      const response = await axios.post(`${BASE_URL}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setUploadedImageUrl(response.data.data); // Adjust this based on your API response
+      } catch (error) {
+      toast.error("Error uploading image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof workspaceFormSchema>) => {
+
+    try {
+      const workspaceData = {
+        ...values,
+        image: uploadedImageUrl,
+      };
+
+      const {data} = await axios.patch(`${BASE_URL}/workspaces/${workspace._id}`, workspaceData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsEdit(false)
+      dispatch(WorkspaceDispatch(data.data))
+      dispatch(GetWorkspacesDispatch())
+      toast.success("Workspace updated successfully");
+
+    } catch (error) {
+      console.error("Error creating workspace:", error);
+      toast.error("Error updating workspace");
+    }
+  };
+
+
+
   return (
     <Form {...form}>
-      <form className="space-y-3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormField
           control={form.control}
-          name="imageurl"
-          render={({ field: { onChange, value, ...rest } }) => (
+          name="image"
+          render={({ field }) => (
             <>
               <FormItem>
                 <FormLabel>
@@ -48,13 +123,16 @@ const EditForm = ({ setIsEdit }: { setIsEdit: any }) => {
                     )}
                     <Input
                       type="file"
-                      {...rest}
+                      {...field}
+                      disabled={isLoading}
                       onChange={(event) => {
-                        const { files, displayUrl } = getImageData(event);
-                        setPreview(displayUrl);
-                        onChange(files);
+                        field.onChange(event); // Update form value
+                        handleFileChange(event); // Upload file
                       }}
                     />
+                    {uploading && (
+                      <Loader2 className="text-neutral-600 h-4 w-4 animate-spin" />
+                    )}
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -74,6 +152,7 @@ const EditForm = ({ setIsEdit }: { setIsEdit: any }) => {
               <FormControl>
                 <Input
                   // disabled={isLoading}
+                  defaultValue={workspace.name}
                   className="w-full
                text-neutral-800 focus-visible:ring-offset-1 focus-visible:ring-indigo-400"
                   {...field}

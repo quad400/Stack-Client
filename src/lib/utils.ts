@@ -17,6 +17,5 @@ export function getImageData(event: ChangeEvent<HTMLInputElement>) {
 
   const files = dataTransfer.files;
   const displayUrl = URL.createObjectURL(event.target.files![0]);
-
   return { files, displayUrl };
 }

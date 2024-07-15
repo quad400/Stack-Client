@@ -47,6 +47,7 @@ const ImageSelector = ({ onSelect, selected }: ImageSelectorProps) => {
       {images.map((image) => {
         return (
           <button
+          key={image.id}
             type="button"
             onClick={() => onSelect(image?.urls?.full)}
             className="h-[100px] w-[150px] group relative rounded-lg"
@@ -62,12 +63,11 @@ const ImageSelector = ({ onSelect, selected }: ImageSelectorProps) => {
               className="w-full h-full object-cover"
             />
             <div className="absolute h-8 justify-center items-start w-full bg-blend-lighten bottom-0 px-2 py-1 left-0 group-hover:bg-gradient-to-b from-neutral-900 to-neutral-800 transition-all opacity-30">
-              <a
-                href={image?.user?.links?.portfolio}
+              <p
                 className="group-hover:text-white text-transparent text-xs font-normal text-center truncate underline"
               >
                 {image?.user?.first_name} {image?.user?.last_name}
-              </a>
+              </p>
             </div>
           </button>
         );
