@@ -7,7 +7,7 @@ import { Form, FormControl, FormItem } from "./ui/form";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { searchFormSchema } from "@/lib/schema/search";
-import { ElementRef, useEffect, useRef } from "react";
+import { ElementRef, useEffect, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -25,11 +25,12 @@ import { Logout } from "@/features/userSlice";
 const MainNav = () => {
   const searchInputRef = useRef<ElementRef<"input">>(null);
 
+  const [search, setSearch] = useState("");
   const dispatch = useAppDispatch();
 
   const { user } = useAppSelector((state) => state.user);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(searchFormSchema),
@@ -56,10 +57,17 @@ const MainNav = () => {
     dispatch(ShowModal(true, "createWorkspace"));
   };
 
-  const handleLogout = ()=> {
-    dispatch(Logout())
-    navigate("/login")
-  }
+  const handleLogout = () => {
+    dispatch(Logout());
+    navigate("/login");
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // form.handleSubmit((data) => {
+    //   navigate(`/search?q=${data.search}`);
+    // })();
+  };
 
   return (
     <nav className="flex static justify-between items-center px-3 md:px-6 py-1.5 border-b">
@@ -84,39 +92,43 @@ const MainNav = () => {
         </Button>
       </div>
       <div className="flex justify-center items-center space-x-3">
-        <Form {...form}>
-          <form>
-            <Controller
-              name="search"
-              render={() => (
-                <FormItem>
-                  <FormControl>
-                    <ActionTooltip content="Press Ctrl + /">
-                      <div className="relative">
-                        <button
-                          type="button"
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                          // onClick={toggleShowPassword}
-                        >
-                          <Search className="text-neutral-600 h-5 w-5 " />
-                        </button>
-                        <Input
-                          ref={searchInputRef}
-                          placeholder="Search..."
-                          className="text-neutral-800 focus-visible:ring-offset-0
+        <ActionTooltip content="Press Ctrl + /">
+          <div className="relative">
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+            >
+              <Search className="text-neutral-600 h-5 w-5 " />
+            </button>
+            <form onSubmit={handleSearch}>
+              <Input
+                name="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                ref={searchInputRef}
+                placeholder="Search..."
+                className="text-neutral-800 focus-visible:ring-offset-0
             h-8
             focus-visible:ring-indigo-400
             md:focus:w-[500px]
             "
-                        />
-                      </div>
-                    </ActionTooltip>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+              />
+            </form>
+            {search.length > 1 && (
+              <div className="py-4 px-2 space-y-2 w-[500px] top-10 left-0 right-0 bg-white shadow-lg absolute">
+                <div className="text-neutral-800 font-medium text-sm">
+                  Search results
+                </div>
+                {
+                  <div className="text-neutral-700 font-normal text-sm">
+                    No results found
+                  </div>
+                }
+              </div>
+            )}
+          </div>
+        </ActionTooltip>
+
         <ActionTooltip content="Information" align="end">
           <Button variant="ghost" size="icon">
             <CircleHelp className="text-neutral-800 h-5 w-5" />
@@ -145,7 +157,7 @@ const MainNav = () => {
               <Separator className="h-px bg-neutral-200 w-full" />
               <div className="px-2">
                 <Button
-                onClick={handleLogout}
+                  onClick={handleLogout}
                   variant="ghost"
                   size="lg"
                   className="flex w-full space-x-3 mb-2 justify-start items-center"
