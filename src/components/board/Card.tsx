@@ -13,23 +13,22 @@ const Card = ({ card, index }: CardProps) => {
     const dispatch = useAppDispatch()
 
     const handleOpen = ()=> {
+      console.log(card)
         dispatch(ShowModal(true, "cardModal", card))
     }
-
   return (
     <Draggable draggableId={card._id} index={index}>
       {(provided) => (
-        <li 
+        <div 
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          role="button"
           onClick={handleOpen}
-          className="bg-white cursor-pointer p-2 rounded-md shadow-sm"
+          className="bg-white p-2 rounded-md hover:ring-1 hover:ring-neutral-700 shadow-md text-neutral-900 font-medium text-start text-sm"
         >
-          <div className="text-neutral-900 font-medium text-start text-sm">
             {card.name}
-          </div>
-        </li>
+         </div>
       )}
     </Draggable>
   );

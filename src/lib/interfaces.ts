@@ -15,6 +15,7 @@ export interface IWorkspace {
   name: string;
   image: string;
   description: string;
+  isPrivate: boolean;
   boards: IBoard[];
   inviteCode: string;
   members: IMember[];
@@ -46,4 +47,30 @@ export interface ICard {
   order: number;
   listId: IList;
   description?: string;
+}
+
+
+export enum ACTION {
+  CREATE = "CREATE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE"
+}
+
+export enum ENTITY_TYPE {
+  LIST = "LIST",
+  BOARD = "BOARD",
+  CARD = "CARD"
+}
+
+
+
+export interface IActivityLog {
+  _id: string;
+  entityType: ENTITY_TYPE
+  entityTitle: string;
+  workspaceId: IWorkspace;
+  action: ACTION
+  user: IUser;
+  createdAt: Date;
+  updatedAt: Date;
 }

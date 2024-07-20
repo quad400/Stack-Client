@@ -62,7 +62,7 @@ const Register = () => {
   return (
     <div className="w-full flex md:flex-row h-screen md:px-10 px-6 bg-neutral-100 justify-center items-center">
       <div className="w-full hidden md:flex flex-col gap-4">
-        <div className="text-neutral-900 font-bold text-2xl">Stack</div>
+        <Link to="/" className="text-neutral-900 font-bold text-2xl">Stack</Link>
         <ul className="flex flex-col gap-4">
           <li className="flex gap-2 justify-start items-start">
             <CircleCheck className="text-indigo-600 h-6 w-6" />

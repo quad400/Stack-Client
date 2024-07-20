@@ -1,9 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IUser } from "@/lib/interfaces";
+import { cn } from "@/lib/utils";
 
-const UserAvatar = ({ user }: { user: IUser | null }) => {
+const UserAvatar = ({
+  user,
+  containerStyle,
+}: {
+  user: IUser | null;
+  containerStyle?: string;
+}) => {
   return (
-    <Avatar className="h-7 w-7">
+    <Avatar className={cn("h-7 w-7", containerStyle)}>
       {user?.avatar ? (
         <AvatarImage src={user.avatar} />
       ) : (

@@ -1,17 +1,26 @@
-import { useAppSelector } from "@/hooks/useRedux";
-import React from "react";
-import { useLocation, Navigate } from "react-router-dom";
+import { RedirectedTo } from "@/features/userSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import React, { useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAppSelector((state) => state.user);
+  const { token, appLoadingState, isAuthenticated, loading } = useAppSelector(
+    (state) => state.user
+  );
+  const dispatch = useAppDispatch();
+  const { pathname } = useLocation();
 
-  const location = useLocation();
+  useEffect(() => {
+    if (!token) {
+      dispatch(RedirectedTo(pathname));
+    }
+  }, [dispatch, token, pathname]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (isAuthenticated) {
+    return children;
+  } else {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
-
-  return children;
 };
 
 export default Protected;

@@ -1,5 +1,3 @@
-"use client";
-
 import qs from "query-string";
 import { Copy, Ellipsis, Plus, Trash } from "lucide-react";
 import { Button } from "../ui/button";
@@ -11,44 +9,68 @@ import {
 import { Separator } from "../ui/separator";
 import axios from "axios";
 import { toast } from "sonner";
-import { useParams, useNavigation } from "react-router-dom";
 import NewCard from "./NewCard";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import BASE_URL from "@/constants/Endpoint";
+import { GetListCardDispatch } from "@/features/workspaceSlice";
 
 const ListAction = ({ listId, name }: { listId: string; name: string }) => {
-  const navigation = useNavigation();
-  const { boardId } = useParams();
+  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { token } = useAppSelector((state) => state.user);
+
+  const dispatch = useAppDispatch();
 
   const handleCopyList = async () => {
     const newName = `${name} Copy`;
     try {
+      if (!board) return;
+
+      const workspaceId = board.workspaceId.toString();
       const url = qs.stringifyUrl({
-        url: "/api/workspaces/board/list",
+        url: `${BASE_URL}/lists`,
         query: {
-          boardId: boardId,
+          workspaceId: workspaceId,
+          boardId: board?._id,
         },
       });
 
-      await axios.post(url, { name: newName });
-      toast.success("List Copied successfully");
-      // router.refresh();
+      await axios.post(
+        url,
+        { name: newName },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(GetListCardDispatch(board?._id));
+      toast.success("List copied successfully");
     } catch (error: any) {
-      console.log(error);
+      console.log(error.response.data.message);
       toast.error("Failed to copy list");
     }
   };
 
   const handleDeleteList = async () => {
+    if (!board) return;
+
+    const workspaceId = board.workspaceId.toString();
     try {
       const url = qs.stringifyUrl({
-        url: "/api/workspaces/board/list",
+        url: `${BASE_URL}/lists/${listId}`,
         query: {
-          boardId: boardId,
-          listId: listId,
+          workspaceId: workspaceId,
+          boardId: board?._id,
         },
       });
 
-      await axios.delete(url);
+      await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success("List Deleted successfully");
+      dispatch(GetListCardDispatch(board?._id));
       // router.refresh();
     } catch (error: any) {
       console.log(error);
@@ -59,9 +81,9 @@ const ListAction = ({ listId, name }: { listId: string; name: string }) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button variant="ghost" size="icon">
+        <button className="hover:bg-neutral-400/10 p-1.5 rounded-md transition">
           <Ellipsis className="text-neutral-800 h-6 w-6" />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent align="start" side="bottom">
         <div className="text-neutral-900 text-sm font-medium text-center">

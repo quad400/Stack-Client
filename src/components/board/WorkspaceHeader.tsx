@@ -1,22 +1,24 @@
 import { Logo } from "@/constants/Images";
 import ActionTooltip from "../ActionTooltop";
 import { Button } from "../ui/button";
-import { LockKeyhole, Pen } from "lucide-react";
+import { Earth, LockKeyhole, Pen } from "lucide-react";
 import { useState } from "react";
 import EditForm from "./EditForm";
 import { IWorkspace } from "@/lib/interfaces";
 
-const WorkspaceHeader = ({workspace}: {workspace: IWorkspace}) => {
+const WorkspaceHeader = ({ workspace }: { workspace: IWorkspace }) => {
   const [isEdit, setIsEdit] = useState(false);
 
   if (isEdit) {
     return <EditForm setIsEdit={setIsEdit} workspace={workspace} />;
   }
 
-
   return (
     <div className="space-x-2 flex justify-start items-center mb-8">
-      <img src={workspace?.image} className="h-14 w-14 rounded-md bg-emerald-500" />
+      <img
+        src={workspace?.image}
+        className="h-14 w-14 rounded-md bg-emerald-500"
+      />
       <div className="flex flex-col justify-start items-start">
         <div className="flex text-lg font-medium space-x-2 text-neutral-800 justify-center items-center">
           <div>{workspace?.name}</div>
@@ -28,8 +30,14 @@ const WorkspaceHeader = ({workspace}: {workspace: IWorkspace}) => {
         </div>
         <ActionTooltip content="visibility" side="bottom">
           <div className="flex space-x-2 items-center justify-center">
-            <LockKeyhole className="h-3 w-3 text-neutral-500" />
-            <div className="text-neutral-700 text-xs">Private</div>
+            {workspace.isPrivate ? (
+              <LockKeyhole className="h-4 w-4 text-neutral-500" />
+            ) : (
+              <Earth className="h-4 w-4 text-neutral-500" />
+            )}{" "}
+            <div className="text-neutral-700 text-xs">
+              {workspace?.isPrivate ? "Private" : "Public"}
+            </div>
           </div>
         </ActionTooltip>
       </div>

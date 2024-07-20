@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MobileToggle from "./MobileToggle";
 import { Button } from "./ui/button";
 import { CircleHelp, LogOut, Plus, Search } from "lucide-react";
@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { ShowModal } from "@/features/workspaceSlice";
 import UserAvatar from "./UserAvatar";
 import { Separator } from "@radix-ui/react-separator";
+import { Logout } from "@/features/userSlice";
 
 const MainNav = () => {
   const searchInputRef = useRef<ElementRef<"input">>(null);
@@ -27,6 +28,9 @@ const MainNav = () => {
   const dispatch = useAppDispatch();
 
   const { user } = useAppSelector((state) => state.user);
+
+  const navigate = useNavigate()
+
   const form = useForm({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
@@ -52,15 +56,20 @@ const MainNav = () => {
     dispatch(ShowModal(true, "createWorkspace"));
   };
 
+  const handleLogout = ()=> {
+    dispatch(Logout())
+    navigate("/login")
+  }
+
   return (
-    <nav className="flex justify-between items-center px-3 md:px-6 py-1.5 border-b">
+    <nav className="flex static justify-between items-center px-3 md:px-6 py-1.5 border-b">
       <div className="flex justify-start items-center">
         <MobileToggle />
         <Link
           to="/"
           className="text-lg text-neutral-700 hidden justify-start items-center md:flex tracking-tighter md:text-2xl font-semibold ml-1"
         >
-          <img src={Logo} alt="Logo" height={30} width={30} />
+          <img src={Logo} alt="Logo" height={20} width={20} />
           Stack
         </Link>
         <Button className="ml-2 hidden md:block" onClick={handleShowModal}>
@@ -136,6 +145,7 @@ const MainNav = () => {
               <Separator className="h-px bg-neutral-200 w-full" />
               <div className="px-2">
                 <Button
+                onClick={handleLogout}
                   variant="ghost"
                   size="lg"
                   className="flex w-full space-x-3 mb-2 justify-start items-center"

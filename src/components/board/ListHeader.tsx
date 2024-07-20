@@ -22,7 +22,7 @@ const ListHeader = ({ name, _id }: { name: string; _id: string }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { token } = useAppSelector((state) => state.user);
-  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { board } = useAppSelector((state) => state.workspace);
   const dispatch = useAppDispatch();
 
   const form = useForm({
@@ -32,18 +32,18 @@ const ListHeader = ({ name, _id }: { name: string; _id: string }) => {
     },
   });
 
-  console.log(name)
 
   const loading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!workspace || !board) return;
+    if (!board) return;
+
+    const workspaceId  = board.workspaceId.toString()
 
     const url = qs.stringifyUrl({
-      url: `${BASE_URL}/lists`,
+      url: `${BASE_URL}/lists/${_id}`,
       query: {
-        workspaceId: workspace?._id,
-        listId: _id,
+        workspaceId: workspaceId
       },
     });
     try {
@@ -77,10 +77,11 @@ const ListHeader = ({ name, _id }: { name: string; _id: string }) => {
               <Input
                 disabled={loading}
                 {...field}
+                autoComplete="off"
                 ref={inputRef}
                 id="name"
                 defaultValue={name}
-                className="text-neutral-800 bg-transparent focus:bg-white focus-visible:ring-offset-1 h-8 focus-visible:ring-indigo-400 py-0 border-0"
+                className="text-neutral-800 cursor-pointer bg-transparent focus:bg-white focus-visible:ring-offset-1 h-8 focus-visible:ring-indigo-400 py-0 border-0"
               />
             </FormControl>
           )}

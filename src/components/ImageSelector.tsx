@@ -49,10 +49,10 @@ const ImageSelector = ({ onSelect, selected }: ImageSelectorProps) => {
           <button
           key={image.id}
             type="button"
-            onClick={() => onSelect(image?.urls?.full)}
+            onClick={() => onSelect(image?.urls?.regular)}
             className="h-[100px] w-[150px] group relative rounded-lg"
           >
-            {selected === image?.urls?.full && (
+            {selected === image?.urls?.regular && (
               <div className="absolute flex top-0 left-0 w-full h-full justify-center items-center bg-neutral-900 opacity-50 z-10">
                 <Check className="text-white h-6 w-6" />
               </div>

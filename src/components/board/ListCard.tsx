@@ -17,17 +17,19 @@ interface ListCardProps {
 }
 
 const ListCard = ({ name, _id, index, cards }: ListCardProps) => {
+  
   return (
-    <Draggable draggableId={_id} index={index}>
+    <Draggable draggableId={_id} index={index}> 
       {(provided) => (
         <li
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-          className="bg-white/90 w-[250px] backdrop-blur-sm rounded-lg shadow-sm py-2 px-2.5 transition-all flex flex-col"
+        {...provided.dragHandleProps}
+        {...provided.draggableProps}
+        ref={provided.innerRef}
+        className="bg-white/80 w-[250px] rounded-lg shadow-lg py-2 px-2.5 transition-all flex flex-col"
         >
           <div
-            {...provided.dragHandleProps}
-            className="flex-row justify-between flex space-x-1 items-center"
+  
+            className="flex-row justify-between flex my-1 space-x-1 items-center"
           >
             <ListHeader name={name} _id={_id} />
 
@@ -35,7 +37,7 @@ const ListCard = ({ name, _id, index, cards }: ListCardProps) => {
           </div>
           <Droppable  droppableId={_id} type="card">
             {(provided) => (
-              <ol
+              <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className="flex flex-col space-y-2 mb-2"
@@ -44,7 +46,7 @@ const ListCard = ({ name, _id, index, cards }: ListCardProps) => {
                   <Card key={card._id} card={card} index={index} />
                 ))}
                 {provided.placeholder}
-              </ol>
+              </div>
             )}
           </Droppable>
           <NewCard listId={_id}>

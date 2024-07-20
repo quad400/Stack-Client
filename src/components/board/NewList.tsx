@@ -2,7 +2,7 @@ import z from "zod";
 import axios from "axios";
 import qs from "query-string";
 import { Plus, X } from "lucide-react";
-import { ElementRef, useRef, useState } from "react";
+import { ElementRef, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,7 +18,10 @@ import { toast } from "sonner";
 import { useParams, useNavigation } from "react-router-dom";
 import BASE_URL from "@/constants/Endpoint";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { GetBoardDispatch } from "@/features/workspaceSlice";
+import {
+  GetBoardDispatch,
+  GetListCardDispatch,
+} from "@/features/workspaceSlice";
 // import useLists from "@/hooks/use-list";
 // import { useModal } from "@/hooks/use-modal-store";
 
@@ -30,14 +33,10 @@ const formSchema = z.object({
 
 const NewList = () => {
   const inputRef = useRef<ElementRef<"input">>(null);
-  const navigation = useNavigation();
-  const { workspace, board } = useAppSelector((state) => state.workspace);
-  const { token } = useAppSelector((state) => state.user);
-
+  const { board } = useAppSelector((state) => state.workspace);
   const dispatch = useAppDispatch();
-  // const lists = useLists({ boardId });
 
-  // const { setData } = useModal();
+  const {token} = useAppSelector((state)=> state.user)
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -59,29 +58,26 @@ const NewList = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (!workspace || !board) return;
-
+      if (!board) return;
       const url = qs.stringifyUrl({
         url: `${BASE_URL}/lists`,
         query: {
-          workspaceId: workspace?._id,
+          workspaceId: board?.workspaceId.toString(),
           boardId: board?._id,
         },
       });
-      
 
       await axios.post(url, values, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      dispatch(GetBoardDispatch(board?._id));
-      toast.success("List created successfully");
-      //   navigation.refresh();
 
-      // setData({ lists });
+      dispatch(GetListCardDispatch(board?._id));
+      toast.success("List created successfully");
 
       form.reset();
     } catch (error: any) {

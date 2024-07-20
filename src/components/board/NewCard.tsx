@@ -1,7 +1,7 @@
 import z from "zod";
 import axios from "axios";
 import qs from "query-string";
-import { Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { ElementRef, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,8 +14,10 @@ import {
 } from "../ui/form";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { useNavigation } from "react-router-dom";
 import { Textarea } from "../ui/textarea";
+import BASE_URL from "@/constants/Endpoint";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { GetListCardDispatch } from "@/features/workspaceSlice";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -30,8 +32,13 @@ interface NewCardProps {
 
 const NewCard = ({ listId, children }: NewCardProps) => {
   const inputRef = useRef<ElementRef<"textarea">>(null);
-  const navigattion = useNavigation();
+
+  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { token } = useAppSelector((state) => state.user);
+
   const [isEditing, setIsEditing] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,16 +60,26 @@ const NewCard = ({ listId, children }: NewCardProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      if (!board) return;
+
       const url = qs.stringifyUrl({
-        url: "/api/workspaces/board/card",
+        url: `${BASE_URL}/cards`,
         query: {
+          workspaceId: board?.workspaceId.toString(),
           listId: listId,
         },
       });
 
-      await axios.post(url, values);
+      await axios.post(url, values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       toast.success("Card created successfully");
-      //   router.refresh();
+
+      dispatch(GetListCardDispatch(board?._id));
+
       form.reset();
     } catch (error: any) {
       console.log(error);

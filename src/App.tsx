@@ -1,14 +1,18 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Home from "./pages/Home";
-import { useAppDispatch, useAppSelector } from "./hooks/useRedux";
+import { useAppDispatch } from "./hooks/useRedux";
 import { Boards, Dashboard, Login, Register, Verify } from "./pages";
 import BoardDetail from "./pages/dashboard/BoardDetail";
 import WorkspaceHome from "./pages/dashboard/WorkspaceHome";
 import BoardList from "./pages/dashboard/BoardList";
 import { useEffect } from "react";
-import { UserDetails } from "./features/userSlice";
+import { Token, UserDetails } from "./features/userSlice";
 import Protected from "./components/Protected";
+import Settings from "./pages/dashboard/Settings";
+import Activity from "./pages/dashboard/Activity";
+import Invite from "./pages/dashboard/Invite";
+import Members from "./pages/dashboard/Members";
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +22,10 @@ const App = () => {
       dispatch(UserDetails(token));
     }
   }, []);
+
+  useEffect(() => {
+    dispatch(Token());
+  }, [dispatch]);
 
   const router = createBrowserRouter([
     {
@@ -33,31 +41,42 @@ const App = () => {
       ),
       children: [
         {
-          path: "home",
-          element: <WorkspaceHome />,
+          path: "",
+          element: <BoardList />,
         },
         {
-          path: "boards",
-          element: <BoardList />,
+          path: ":workspaceId/activity",
+          element: <Activity />,
         },
         {
           path: ":workspaceId",
           element: <Boards />,
         },
-
         {
           path: ":workspaceId/settings",
-          element: <Boards />,
+          element: <Settings />,
         },
         {
           path: ":workspaceId/members",
-          element: <Boards />,
+          element: <Members />,
         },
       ],
     },
     {
+      path: "invite/:inviteCode",
+      element: (
+        <Protected>
+          <Invite />
+        </Protected>
+      ),
+    },
+    {
       path: "boards/:boardId",
-      element: <BoardDetail />,
+      element: (
+        <Protected>
+          <BoardDetail />
+        </Protected>
+      ),
     },
     {
       path: "/login/*",

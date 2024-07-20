@@ -5,7 +5,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CloseModal } from "@/features/workspaceSlice";
+import { CloseModal, GetWorkspacesDispatch } from "@/features/workspaceSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { workspaceFormSchema } from "@/lib/schema/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -93,6 +93,7 @@ const CreateWorkSpaceModal = () => {
         },
       });
       onClose();
+      dispatch(GetWorkspacesDispatch())
       form.reset();
       toast.success("Workspace created successfully");
       // router.push(`/dashboard/${data?._id}`)

@@ -1,21 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "./store";
-import { IBoard, ICard, IWorkspace } from "@/lib/interfaces";
+import { IBoard, ICard, IList, IWorkspace } from "@/lib/interfaces";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
 import { toast } from "sonner";
+import queryString from "query-string";
 
-type ModalType = "createWorkspace" | "createBoard" | "cardModal" | null;
+type ModalType =
+  | "createWorkspace"
+  | "createBoard"
+  | "cardModal"
+  | "manageMember"
+  | null;
 
-type ModalData = ICard | undefined;
+type ModalData = ICard | IWorkspace | undefined;
 
 interface WorkspaceState {
   showModal: boolean;
   modalType: ModalType;
   data: ModalData;
+  loading: boolean;
   workspace: IWorkspace | null;
   board: IBoard | null;
   workspaces: IWorkspace[] | [];
+  lists: IList[] | [];
 }
 
 const initialState: WorkspaceState = {
@@ -23,7 +31,9 @@ const initialState: WorkspaceState = {
   modalType: null,
   data: undefined,
   workspace: null,
+  loading: false,
   board: null,
+  lists: [],
   workspaces: [],
 };
 
@@ -33,6 +43,9 @@ const slice = createSlice({
   reducers: {
     showModal: (state, action: PayloadAction<boolean>) => {
       state.showModal = action.payload;
+    },
+    loading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
     },
     modalType: (state, action: PayloadAction<ModalType>) => {
       state.modalType = action.payload;
@@ -48,6 +61,9 @@ const slice = createSlice({
     },
     workspaces: (state, action: PayloadAction<IWorkspace[] | []>) => {
       state.workspaces = action.payload;
+    },
+    lists: (state, action: PayloadAction<IList[] | []>) => {
+      state.lists = action.payload;
     },
   },
 });
@@ -85,6 +101,8 @@ export const GetWorkspacesDispatch = () => {
     const token = localStorage.getItem("token");
 
     try {
+      dispatch(slice.actions.loading(true));
+
       const { data } = await axios.get(`${BASE_URL}/workspaces`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -94,6 +112,8 @@ export const GetWorkspacesDispatch = () => {
     } catch (error: any) {
       toast.error(error.response.data.message);
       console.log(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
     }
   };
 };
@@ -103,15 +123,42 @@ export const GetWorkspaceDispatch = (workspaceId: string) => {
     const token = localStorage.getItem("token");
 
     try {
-      const { data } = await axios.get(`${BASE_URL}/workspaces/${workspaceId}`, {
+      dispatch(slice.actions.loading(true));
+
+      const { data } = await axios.get(
+        `${BASE_URL}/workspaces/${workspaceId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(slice.actions.workspace(data.data));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
+    }
+  };
+};
+
+export const UpdateWorkspaceDispatch = (workspaceId: string, body: any) => {
+  return async (dispatch: AppDispatch) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      dispatch(slice.actions.loading(true));
+      await axios.patch(`${BASE_URL}/workspaces/${workspaceId}`, body, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      dispatch(slice.actions.workspace(data.data));
+      dispatch(GetWorkspaceDispatch(workspaceId));
     } catch (error: any) {
       toast.error(error.response.data.message);
       console.log(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
     }
   };
 };
@@ -121,6 +168,8 @@ export const GetBoardDispatch = (boardId: string) => {
     const token = localStorage.getItem("token");
 
     try {
+      dispatch(slice.actions.loading(true));
+
       const { data } = await axios.get(`${BASE_URL}/boards/${boardId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -130,6 +179,91 @@ export const GetBoardDispatch = (boardId: string) => {
     } catch (error: any) {
       toast.error(error.response.data.message);
       console.log(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
     }
   };
 };
+
+export const ListDispatch = (body: IList[]) => {
+  return async (dispatch: AppDispatch, getState: any) => {
+    const token = localStorage.getItem("token");
+
+    dispatch(slice.actions.lists(body));
+
+    const { board } = getState().workspace;
+    const url = queryString.stringifyUrl({
+      url: `${BASE_URL}/lists/reorder`,
+      query: {
+        boardId: board?._id,
+        workspaceId: board?.workspaceId,
+      },
+    });
+
+    try {
+      const { data } = await axios.post(url, body, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success(data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
+    }
+  };
+};
+
+export const CardDispatch = (body: IList[]) => {
+  return async (dispatch: AppDispatch, getState: any) => {
+    const token = localStorage.getItem("token");
+
+    dispatch(slice.actions.lists(body));
+
+    const { board } = getState().workspace;
+    const url = queryString.stringifyUrl({
+      url: `${BASE_URL}/cards/reorder`,
+      query: {
+        workspaceId: board?.workspaceId,
+      },
+    });
+
+    try {
+      const { data } = await axios.post(url, body, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success(data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    } finally {
+      dispatch(slice.actions.loading(false));
+    }
+  };
+};
+
+export const GetListCardDispatch = (boardId: string) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const { data } = await axios.get(`${BASE_URL}/lists?boardId=${boardId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      dispatch(slice.actions.lists(data.data));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  };
+};
+
+// export const UpdateListDispatch = (data: Record<string, any>, )

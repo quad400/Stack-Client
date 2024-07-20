@@ -27,10 +27,11 @@ import ImageSelector from "../ImageSelector";
 import BASE_URL from "@/constants/Endpoint";
 import axios from "axios";
 import { toast } from "sonner";
-import { useParams } from "react-router-dom";
 
 const CreateBoardModal = () => {
-  const { modalType, showModal } = useAppSelector((state) => state.workspace);
+  const { modalType, showModal } = useAppSelector(
+    (state) => state.workspace
+  );
 
   const isOpen = modalType === "createBoard" && showModal;
 
@@ -50,13 +51,13 @@ const CreateBoardModal = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof boardFormSchema>) => {
-    if (!worksapce) return;
+    if (!workspace) return;
 
     try {
       const url = qs.stringifyUrl({
         url: `${BASE_URL}/boards`,
         query: {
-          workspaceId: workspace._id,
+          workspaceId: workspace?._id,
         },
       });
 
@@ -66,7 +67,7 @@ const CreateBoardModal = () => {
         },
       });
       onClose();
-      dispatch(GetWorkspaceDispatch(workspace._id));
+      dispatch(GetWorkspaceDispatch(workspace?._id));
       form.reset();
       toast.success("Board created successfully");
     } catch (error) {

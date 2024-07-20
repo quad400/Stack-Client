@@ -24,7 +24,7 @@ const BoardDetail = () => {
   return (
     <div className="w-full h-screen flex flex-col relative">
       <MainNav />
-      <ScrollArea className="w-full h-full">
+      <ScrollArea className="w-full h-full whitespace-nowrap">
         <div className="flex flex-row w-full">
           <img
             alt="dhs"

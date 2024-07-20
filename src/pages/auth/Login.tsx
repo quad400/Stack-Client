@@ -16,18 +16,22 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { Token, UserDetails } from "@/features/userSlice";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const token = localStorage.getItem("token");
 
-  const { token } = useAppSelector((state) => state.user);
-
+  const { redirectTo } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -40,6 +44,7 @@ const Login = () => {
     },
   });
 
+  const locationPath = redirectTo || "/workspace";
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
@@ -49,7 +54,10 @@ const Login = () => {
       toast.success("Login Successful");
 
       localStorage.setItem("token", data?.data.tokens.access);
-      navigate(`/workspace`, { replace: true });
+
+      dispatch(Token());
+      dispatch(UserDetails(data?.data.tokens.access));
+      navigate(locationPath, { replace: true });
       form.reset();
     } catch (error: any) {
       toast.error(error.response.data.message);
@@ -58,15 +66,18 @@ const Login = () => {
 
   useEffect(() => {
     if (token) {
-      navigate(`/workspace`);
+      navigate(locationPath, { replace: true });
     }
   }, [token]);
 
   return (
     <div className="flex justify-center items-center w-full h-screen flex-col px-6 md:px-10 bg-neutral-100">
-      <div className="text-neutral-900 font-bold text-3xl text-left mb-4">
+      <Link
+        to="/"
+        className="text-neutral-900 font-bold text-3xl text-left mb-4"
+      >
         Stack
-      </div>
+      </Link>
       <div className="bg-white w-full shadow-lg rounded-lg pt-6  justify-center items-start flex-col flex md:w-1/2 lg:w-1/3">
         <div className="w-full justify-center items-center mb-4">
           <div className="text-xl text-center text-neutral-900 font-bold">
@@ -147,7 +158,7 @@ const Login = () => {
               </div>
             </div>
             <Button variant="primary" className="w-full" disabled={isLoading}>
-              Create account
+              Sign in
             </Button>
           </form>
         </Form>
