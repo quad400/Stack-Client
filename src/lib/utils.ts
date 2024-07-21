@@ -88,14 +88,25 @@ export const onDragEnd = async (
   }
 };
 
-export function dateFormater(date: Date | null): string {
+
+
+export function dateFormater(date: Date | null) {
+  
   if (date === null) {
     return "-";
   }
+  
+  // Parse the ISO string into a Date object
+  const parsedDate = new Date(date);
+
+  // Check if the date is valid
+  if (isNaN(parsedDate.getTime())) {
+    return "Invalid date";
+  }
 
   const now = new Date();
-  const s = Math.abs(now.getTime() - date.getTime()) / 1000;
-  // Seconds
+  const s = Math.abs(now.getTime() - parsedDate.getTime()) / 1000;
+
   if (s < 60) {
     return "now";
   }

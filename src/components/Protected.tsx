@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
-  const { token, isAuthenticated } = useAppSelector(
+  const { token, isAuthenticated, appLoadingState } = useAppSelector(
     (state) => state.user
   );
   const dispatch = useAppDispatch();
@@ -18,7 +18,7 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
 
   if (isAuthenticated) {
     return children;
-  } else {
+  } else if(!appLoadingState && !isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 };

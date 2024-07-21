@@ -76,7 +76,8 @@ export const UserDetails = (token: string) => {
       dispatch(Token());
       dispatch(slice.actions.user(data?.data));
     } catch (error: any) {
-      dispatch(Logout());
+      console.log(error.message)
+      // dispatch(Logout());
     }
   };
 };
