@@ -4,7 +4,7 @@ import { GetWorkspaceDispatch } from "@/features/workspaceSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { getActivities } from "@/lib/activities";
 import { IActivityLog } from "@/lib/interfaces";
-import { ActivityIcon, Earth, Lock } from "lucide-react";
+import { ActivityIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { dateFormater } from "../../lib/utils";

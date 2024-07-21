@@ -15,7 +15,6 @@ import { Input } from "../ui/input";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { CloseModal } from "@/features/workspaceSlice";
 import { Button } from "../ui/button";
-import UserAvatar from "../UserAvatar";
 import useMembers from "@/hooks/useMembers";
 import ManageMemberLoader from "../loaders/ManageMemberLoader";
 import { toast } from "sonner";

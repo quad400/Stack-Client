@@ -1,5 +1,3 @@
-"use client";
-
 import z from "zod";
 import axios from "axios";
 import qs from "query-string";
@@ -8,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField } from "../ui/form";
 import { Input } from "../ui/input";
-import { useParams, useNavigation } from "react-router-dom";
 import { toast } from "sonner";
 import BASE_URL from "@/constants/Endpoint";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";

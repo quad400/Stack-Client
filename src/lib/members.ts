@@ -1,7 +1,5 @@
 import BASE_URL from "@/constants/Endpoint";
 import axios from "axios";
-import { toast } from "sonner";
-
 export const getMembers = async (workspaceId: string) => {
   try {
     const token = localStorage.getItem("token");

@@ -33,7 +33,14 @@ const BoardSideBar = () => {
   }, [board, setWorkspace]);
 
   const handleMember = () => {
-    dispatch(ShowModal(true, "manageMember", board?.workspaceId));
+    dispatch(
+      ShowModal(
+        true,
+        "manageMember",
+        undefined,
+        board?.workspaceId as unknown as unknown as string
+      )
+    );
   };
 
   return (
@@ -94,19 +101,18 @@ const BoardSideBar = () => {
                   align="center"
                   side="right"
                 > */}
-                  <button
-                    onClick={handleMember}
-                    className="flex w-full py-2 pr-2 pl-1 hover:bg-neutral-200 space-x-2 justify-between items-center"
-                  >
-                    <div className="flex space-x-2 justify-start items-center">
-
+                <button
+                  onClick={handleMember}
+                  className="flex w-full py-2 pr-2 pl-1 hover:bg-neutral-200 space-x-2 justify-between items-center"
+                >
+                  <div className="flex space-x-2 justify-start items-center">
                     <User className="text-neutral-600 h-5 w-5" />
                     <div className="text-neutral-700 text-sm font-medium">
                       Members
                     </div>
-                    </div>
-                    <Plus className="text-neutral-600 h-4 w-4" />
-                  </button>
+                  </div>
+                  <Plus className="text-neutral-600 h-4 w-4" />
+                </button>
                 {/* </ActionTooltip> */}
               </div>
               <button

@@ -1,6 +1,6 @@
 import { CircleHelp } from "lucide-react";
 import ActionTooltip from "../ActionTooltop";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch } from "@/hooks/useRedux";
 import { ShowModal } from "@/features/workspaceSlice";
 import { useParams } from "react-router-dom";
 
@@ -9,7 +9,7 @@ const NewBoard = () => {
   const { workspaceId } = useParams();
 
   const handleOpenModal = () => {
-    dispatch(ShowModal(true, "createBoard", workspaceId));
+    dispatch(ShowModal(true, "createBoard", undefined, workspaceId));
   };
 
   return (

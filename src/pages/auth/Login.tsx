@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
@@ -30,7 +30,6 @@ const Login = () => {
   const { redirectTo } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);

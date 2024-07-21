@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 const Protected = ({ children }: { children: React.ReactNode }) => {
-  const { token, appLoadingState, isAuthenticated, loading } = useAppSelector(
+  const { token, isAuthenticated } = useAppSelector(
     (state) => state.user
   );
   const dispatch = useAppDispatch();

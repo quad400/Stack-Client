@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppDispatch, RootState } from "./store";
+import { AppDispatch } from "./store";
 import { IBoard, ICard, IList, IWorkspace } from "@/lib/interfaces";
 import axios from "axios";
 import BASE_URL from "@/constants/Endpoint";
@@ -13,12 +13,12 @@ type ModalType =
   | "manageMember"
   | null;
 
-type ModalData = ICard | IWorkspace | undefined;
 
 interface WorkspaceState {
   showModal: boolean;
   modalType: ModalType;
-  data: ModalData;
+  card: ICard | undefined;
+  data: string | undefined;
   loading: boolean;
   workspace: IWorkspace | null;
   board: IBoard | null;
@@ -30,6 +30,7 @@ const initialState: WorkspaceState = {
   showModal: false,
   modalType: null,
   data: undefined,
+  card: undefined,
   workspace: null,
   loading: false,
   board: null,
@@ -50,8 +51,11 @@ const slice = createSlice({
     modalType: (state, action: PayloadAction<ModalType>) => {
       state.modalType = action.payload;
     },
-    data: (state, action: PayloadAction<ModalData>) => {
+    data: (state, action: PayloadAction<string | undefined>) => {
       state.data = action.payload;
+    },
+    card: (state, action: PayloadAction<ICard | undefined>) => {
+      state.card = action.payload;
     },
     workspace: (state, action: PayloadAction<IWorkspace | null>) => {
       state.workspace = action.payload;
@@ -73,11 +77,13 @@ export default slice.reducer;
 export const ShowModal = (
   payload: boolean,
   type: ModalType,
-  data?: ModalData
+  card?: ICard | undefined,
+  data?: string | undefined
 ) => {
   return (dispatch: AppDispatch) => {
     dispatch(slice.actions.showModal(payload));
     dispatch(slice.actions.modalType(type));
+    dispatch(slice.actions.card(card));
     dispatch(slice.actions.data(data));
   };
 };
@@ -86,6 +92,7 @@ export const CloseModal = () => {
   return (dispatch: AppDispatch) => {
     dispatch(slice.actions.showModal(false));
     dispatch(slice.actions.modalType(null));
+    dispatch(slice.actions.card(undefined));
     dispatch(slice.actions.data(undefined));
   };
 };

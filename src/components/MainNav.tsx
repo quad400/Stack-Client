@@ -3,10 +3,6 @@ import MobileToggle from "./MobileToggle";
 import { Button } from "./ui/button";
 import { CircleHelp, LogOut, Plus, Search } from "lucide-react";
 import { Input } from "./ui/input";
-import { Form, FormControl, FormItem } from "./ui/form";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { searchFormSchema } from "@/lib/schema/search";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import {
   Popover,
@@ -31,13 +27,6 @@ const MainNav = () => {
   const { user } = useAppSelector((state) => state.user);
 
   const navigate = useNavigate();
-
-  const form = useForm({
-    resolver: zodResolver(searchFormSchema),
-    defaultValues: {
-      search: "",
-    },
-  });
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === "/") {

@@ -1,5 +1,4 @@
 import BoardCard from "@/components/board/BoardCard";
-import NewBoard from "@/components/board/NewBoard";
 import { GetWorkspacesDispatch } from "@/features/workspaceSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { IBoard } from "@/lib/interfaces";

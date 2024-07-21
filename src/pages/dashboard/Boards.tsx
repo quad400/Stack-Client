@@ -2,7 +2,7 @@ import BoardCard from "@/components/board/BoardCard";
 import { Separator } from "@/components/ui/separator";
 import WorkspaceHeader from "@/components/board/WorkspaceHeader";
 import { IBoard } from "@/lib/interfaces";
-import { Layout, User } from "lucide-react";
+import { Layout } from "lucide-react";
 import NewBoard from "@/components/board/NewBoard";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { useEffect } from "react";

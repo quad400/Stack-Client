@@ -88,15 +88,13 @@ export const onDragEnd = async (
   }
 };
 
-
-
-export function dateFormater(date: Date) {
+export function dateFormater(date: Date | null): string {
   if (date === null) {
     return "-";
   }
-  const now = new Date();
-  const s = Math.abs(now - new Date(date)) / 1000;
 
+  const now = new Date();
+  const s = Math.abs(now.getTime() - date.getTime()) / 1000;
   // Seconds
   if (s < 60) {
     return "now";

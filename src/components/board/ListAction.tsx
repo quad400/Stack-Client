@@ -15,7 +15,7 @@ import BASE_URL from "@/constants/Endpoint";
 import { GetListCardDispatch } from "@/features/workspaceSlice";
 
 const ListAction = ({ listId, name }: { listId: string; name: string }) => {
-  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { board } = useAppSelector((state) => state.workspace);
   const { token } = useAppSelector((state) => state.user);
 
   const dispatch = useAppDispatch();

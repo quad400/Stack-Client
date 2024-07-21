@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Activity, CreditCard, Layout, Settings, Users } from "lucide-react";
+import { Activity, Layout, Settings, Users } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";

@@ -33,7 +33,7 @@ interface NewCardProps {
 const NewCard = ({ listId, children }: NewCardProps) => {
   const inputRef = useRef<ElementRef<"textarea">>(null);
 
-  const { workspace, board } = useAppSelector((state) => state.workspace);
+  const { board } = useAppSelector((state) => state.workspace);
   const { token } = useAppSelector((state) => state.user);
 
   const [isEditing, setIsEditing] = useState(false);

@@ -2,7 +2,7 @@ import z from "zod";
 import axios from "axios";
 import qs from "query-string";
 import { Plus, X } from "lucide-react";
-import { ElementRef, useEffect, useRef, useState } from "react";
+import { ElementRef, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,15 +15,11 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { useParams, useNavigation } from "react-router-dom";
 import BASE_URL from "@/constants/Endpoint";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
-  GetBoardDispatch,
   GetListCardDispatch,
 } from "@/features/workspaceSlice";
-// import useLists from "@/hooks/use-list";
-// import { useModal } from "@/hooks/use-modal-store";
 
 const formSchema = z.object({
   name: z.string().min(3, {

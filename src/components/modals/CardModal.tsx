@@ -31,7 +31,7 @@ const formSchema = z.object({
 });
 
 const CardModal = () => {
-  const { data, showModal, modalType, board } = useAppSelector(
+  const { card, showModal, modalType, board } = useAppSelector(
     (state) => state.workspace
   );
 
@@ -52,23 +52,23 @@ const CardModal = () => {
   const isLoading = form.formState.isSubmitting;
 
   useEffect(() => {
-    form.setValue("name", data?.name || "");
-    form.setValue("description", data?.description || "");
-  }, [form, data]);
+    form.setValue("name", card?.name || "");
+    form.setValue("description", card?.description || "");
+  }, [form, card]);
 
   useEffect(() => {
-    // if (!data) return;
-    getListById(data?.listId).then((res) => {
+    // if (!card) return;
+    getListById(card?.listId).then((res) => {
       setList(res);
     });
-  }, [data, isOpen, setList]);
+  }, [card, isOpen, setList]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       if (!board) return;
 
       const url = qs.stringifyUrl({
-        url: `${BASE_URL}/cards/${data?._id}`,
+        url: `${BASE_URL}/cards/${card?._id}`,
         query: {
           workspaceId: board.workspaceId.toString(),
         },
@@ -95,13 +95,13 @@ const CardModal = () => {
         url: `${BASE_URL}/cards`,
         query: {
           workspaceId: board?.workspaceId.toString(),
-          listId: data?.listId.toString(),
+          listId: card?.listId.toString(),
         },
       });
 
       const value = {
-        name: `${data?.name} Copy`,
-        description: data?.description,
+        name: `${card?.name} Copy`,
+        description: card?.description,
       };
 
       await axios.post(url, value, {
@@ -125,10 +125,10 @@ const CardModal = () => {
     try {
       if (!board) return;
       const url = qs.stringifyUrl({
-        url: `${BASE_URL}/cards/${data?._id}`,
+        url: `${BASE_URL}/cards/${card?._id}`,
         query: {
           workspaceId: board?.workspaceId.toString(),
-          listId: data?.listId.toString(),
+          listId: card?.listId.toString(),
         },
       });
 

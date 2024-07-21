@@ -1,4 +1,3 @@
-import { Logo } from "@/constants/Images";
 import ActionTooltip from "../ActionTooltop";
 import { Button } from "../ui/button";
 import { Earth, LockKeyhole, Pen } from "lucide-react";

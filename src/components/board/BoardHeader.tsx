@@ -91,10 +91,16 @@ const BoardHeader = ({ name }: { name: string | undefined }) => {
     }
   };
 
-
-  const handleShare = ()=> {
-    dispatch(ShowModal(true, "manageMember", board?.workspaceId))
-  }
+  const handleShare = () => {
+    dispatch(
+      ShowModal(
+        true,
+        "manageMember",
+        undefined,
+        board?.workspaceId as unknown as unknown as string
+      )
+    );
+  };
 
   return (
     <div className="bg-white/30 w-full sticky top-0 backdrop-blur-sm pr-4">

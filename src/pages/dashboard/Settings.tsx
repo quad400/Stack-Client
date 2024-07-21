@@ -16,7 +16,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { deleteWorkspace } from "@/lib/workspaces";
 import { Check, Earth, Lock, Settings as SettingsIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Settings = () => {
