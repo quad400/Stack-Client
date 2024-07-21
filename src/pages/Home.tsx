@@ -20,7 +20,7 @@ const Home = () => {
     <main className="flex flex-col h-screen w-full bg-neutral-200/50">
       <nav className="bg-neutral-50 shadow-sm flex justify-between items-center py-1.5 md:py-2 px-6 md:px-10 backdrop-blur-lg">
         <div className="flex justify-start items-center">
-          <img src={Logo} alt="Logo" height={50} width={50} />
+          <img src={Logo} alt="Logo" height={25} width={25} />
           <div className="text-lg text-neutral-900 tracking-tighter md:text-2xl font-bold ml-2">
             Stack
           </div>
@@ -63,7 +63,7 @@ const Home = () => {
       </div>
       <footer className="bg-neutral-100/50 shadow-sm flex w-full justify-between items-center px-6 md:px-10 backdrop-blur-lg">
         <div className="flex justify-start items-center">
-          <img src={Logo} alt="Logo" height={50} width={50} />
+          <img src={Logo} alt="Logo" height={25} width={25} />
           <div className="text-lg text-neutral-900 tracking-tighter md:text-2xl font-bold ml-2">
             Stack
           </div>
