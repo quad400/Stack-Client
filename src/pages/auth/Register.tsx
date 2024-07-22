@@ -51,7 +51,7 @@ const Register = () => {
   const onSubmit = async (values: z.infer<typeof registerFormSchema>) => {
     try {
       await axios.post(`${BASE_URL}/users/register`, values);
-      toast.success("User successfully created");
+      toast.success(`User successfully created, Email Sent to ${values.email}`);
 
       form.reset();
     } catch (error: any) {
