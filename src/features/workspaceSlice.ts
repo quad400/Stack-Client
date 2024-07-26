@@ -13,7 +13,6 @@ type ModalType =
   | "manageMember"
   | null;
 
-
 interface WorkspaceState {
   showModal: boolean;
   modalType: ModalType;
@@ -170,12 +169,14 @@ export const UpdateWorkspaceDispatch = (workspaceId: string, body: any) => {
   };
 };
 
-export const GetBoardDispatch = (boardId: string) => {
+export const GetBoardDispatch = (boardId: string, bypass: boolean = false) => {
   return async (dispatch: AppDispatch) => {
     const token = localStorage.getItem("token");
 
     try {
-      dispatch(slice.actions.loading(true));
+      if (!bypass) {
+        dispatch(slice.actions.loading(true));
+      }
 
       const { data } = await axios.get(`${BASE_URL}/boards/${boardId}`, {
         headers: {

@@ -50,9 +50,8 @@ const ListHeader = ({ name, _id }: { name: string; _id: string }) => {
         },
       });
 
-      //   router.refresh();
       inputRef.current?.blur();
-      dispatch(GetBoardDispatch(board._id));
+      dispatch(GetBoardDispatch(board._id, true));
       toast.success("List name updated");
     } catch (error: any) {
       console.log(error.response.data.message);

@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { GetWorkspacesDispatch } from "@/features/workspaceSlice";
 import { ScrollArea } from "./ui/scroll-area";
+import SideNavLoader from "./loaders/SideNavLoader";
 
 const SideNav = ({storageKey}:{storageKey: string}) => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const SideNav = ({storageKey}:{storageKey: string}) => {
 
   const dispatch = useAppDispatch();
 
-  const { workspaces } = useAppSelector((state) => state.workspace);
+  const { workspaces, loading } = useAppSelector((state) => state.workspace);
 
   const { pathname } = useLocation();
 
@@ -59,6 +60,8 @@ const SideNav = ({storageKey}:{storageKey: string}) => {
         <Separator className="text-neutral-400 w-full h-[1px]" />
         <div className="flex flex-col justify-start items-start w-full">
           <div className="text-xs text-neutral-500 font-normal">Workspaces</div>
+          
+          {loading && <SideNavLoader />}
           {workspaces.map((workspace) => (
             <SideNavItem
               key={workspace._id}
